@@ -43,6 +43,7 @@
                 <Card style="width:350px">
                   <p slot="title">操作</p>
                   <!--                  <Switch true-color="#13ce66" false-color="#ff4949"/>-->
+                    <Button type="error" class="input_value">删除本网站账号及所有信息</Button>
                 </Card>
               </TabPane>
               <!--日志显示-->
