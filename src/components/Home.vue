@@ -22,22 +22,30 @@
                                             <span slot="prepend">client_secret</span>
                                         </Input>
                                         <Button class="input_value">保存</Button>
-                                        <Button type="primary" class="input_value">授权</Button>
+                                        <Button type="primary" class="input_value" v-on:click="getOutlookInfo">授权</Button>
                                     </div>
                                 </Card>
                                 <br/>
                                 <!--调用时间-->
                                 <Card style="width:350px">
-                                    <p slot="title">调用时间配置</p>
+                                    <p slot="title">调用时间范围配置</p>
                                     <div>
                                         <Input v-model="cron_time.cron_time" placeholder="单位: 秒" class="input_value">
-                                            <span slot="prepend">调用时间间隔</span>
+                                            <span slot="prepend">调用时间范围</span>
                                         </Input>
-                                        <Input v-model="cron_time.cron_time_random_start"
-                                               placeholder="格式：10-60" class="input_value">
-                                            <span slot="prepend" class="input_value">随机时间范围</span>
-                                        </Input>
+                                        <!-- <Input v-model="cron_time.cron_time_random_start"
+                                                placeholder="格式：10-60" class="input_value">
+                                             <span slot="prepend" class="input_value">随机时间范围</span>
+                                         </Input>-->
                                         <Button type="primary" class="input_value">保存</Button>
+
+                                        <div style="margin: 1% 5%">
+                                            说明：可以输入两种格式，单位 秒
+                                            <ul>
+                                                <li>纯数字</li>
+                                                <li>范围，例如: 30-60,代表在30秒-60秒之间随机调用一次</li>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </Card>
                                 <br/>
@@ -108,6 +116,11 @@ export default {
           originalMsg: 'fddddddddddddddddfddddddddddd'
         }
       ]
+    }
+  },
+  methods: {
+    getOutlookInfo () {
+      this.$axios.get('/outlook/outlook/getOutlookInfo')
     }
   }
 }
