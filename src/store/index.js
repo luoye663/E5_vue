@@ -1,13 +1,18 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import state from './state.js'
 
 Vue.use(Vuex)
-const state = new Vuex.Store
-{
-  isLogin: false,
-    token: localStorage.getItem('token') ? localStorage.getItem('token') : ''
-}
+
 export default new Vuex.Store({
-  state
+  state: {
+    user: {
+      username: window.localStorage.getItem('user' || '[]') == null ? '' : JSON.parse(window.localStorage.getItem('user' || '[]')).username
+    }
+  },
+  mutations: {
+    login (state, user) {
+      state.user = user
+      window.localStorage.setItem('user', JSON.stringify(user))
+    }
+  }
 })
