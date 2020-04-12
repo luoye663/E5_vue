@@ -1,5 +1,6 @@
 <template>
   <div class="hello">
+      模拟登录页面
     <h1>{{ msg }}</h1>
     <h2>Essential Links</h2>
     <ul>
