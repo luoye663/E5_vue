@@ -31,7 +31,7 @@ const router = new Router({
 
 router.beforeEach((to, from, next) => {
   if (to.meta.requireAuth) {
-    if (store.state.user.username) {
+    if (store.state.user.token) {
       next()
     } else {
       next({

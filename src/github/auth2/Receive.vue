@@ -31,10 +31,12 @@ export default {
         }
       }).then(res => {
         console.log(res.data)
-        let userToken = 'token ' + res.data.data.token
+        let userToken = res.data.data.token
         console.log(userToken)
         // 将用户token保存到vuex中
-        _this.login({ Authorization: _this.userToken })
+        _this.$store.commit('changeLogin', { token: userToken,
+          username: 'test'})
+        // _this.changeLogin({ token: userToken })
         // _this.$router.push('/home')
         console.log('登陆成功')
       }).catch(error => {
