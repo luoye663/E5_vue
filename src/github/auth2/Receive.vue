@@ -21,6 +21,26 @@ export default {
   },
   methods: {
     login () {
+      let _this = this
+      _this.$axios({
+        method: 'get',
+        url: '/auth2/receive',
+        params: {
+          code: _this.$utils.getUrlKey('code'),
+          state: _this.$utils.getUrlKey('state')
+        }
+      }).then(res => {
+        console.log(res.data)
+        let userToken = 'token ' + res.data.data.token
+        console.log(userToken)
+        // 将用户token保存到vuex中
+        _this.login({ Authorization: _this.userToken })
+        // _this.$router.push('/home')
+        console.log('登陆成功')
+      }).catch(error => {
+        console.log('账号或密码错误')
+        console.log(error)
+      })
       console.log(this.$utils.getUrlKey('code'))
     },
     show () {
