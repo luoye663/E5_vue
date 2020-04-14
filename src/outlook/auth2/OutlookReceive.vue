@@ -1,6 +1,5 @@
 <template>
     <div>
-        <p size="80" style="margin: 10% auto;width:100%">{{msg}}</p>
         <Spin fix v-if="spinShow">
             <Icon type="ios-loading" size=32 class="demo-spin-icon-load"></Icon>
             <div>正在获取授权状态......</div>
@@ -9,12 +8,12 @@
             <!--对话框-->
             <Modal
                     v-model="modal1"
-                    title="Common Modal dialog box title"
+                    title="授权结果"
                     @on-ok="ok"
-                    @on-cancel="cancel">
-                <p>Content of dialog</p>
-                <p>Content of dialog</p>
-                <p>Content of dialog</p>
+                    @on-cancel="cancel"
+                    cancel-text=""
+                    :mask-closable="false">
+                <p>{{msg}}</p>
             </Modal>
         </div>
     </div>
