@@ -36,8 +36,7 @@ export default {
         // 将用户token保存到vuex中
         _this.$store.commit('changeLogin', { token: userToken,
           username: 'test'})
-        // _this.changeLogin({ token: userToken })
-        // _this.$router.push('/home')
+        _this.$router.push('/user/home')
         console.log('登陆成功')
       }).catch(error => {
         console.log('账号或密码错误')

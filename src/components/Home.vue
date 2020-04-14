@@ -14,14 +14,14 @@
                                 <Card style="width:350px">
                                     <p slot="title">Key配置</p>
                                     <div>
-                                        <Input v-model="outlook.client_id" placeholder="client_id" class="input_value">
+                                        <Input v-model="outlook.clientId" placeholder="client_id" class="input_value">
                                             <span slot="prepend">client_id</span>
                                         </Input>
-                                        <Input v-model="outlook.client_secret" placeholder="client_secret"
+                                        <Input v-model="outlook.clientSecret" placeholder="client_secret"
                                                class="input_value">
                                             <span slot="prepend">client_secret</span>
                                         </Input>
-                                        <Button class="input_value">保存</Button>
+                                        <Button class="input_value" v-on:click="outlookSave()">保存</Button>
                                         <Button type="primary" class="input_value" v-on:click="getOutlookInfo">授权</Button>
                                     </div>
                                 </Card>
@@ -30,17 +30,17 @@
                                 <Card style="width:350px">
                                     <p slot="title">调用时间范围配置</p>
                                     <div>
-                                        <Input v-model="cron_time.cron_time" placeholder="单位: 秒" class="input_value">
+                                        <Input v-model="outlook.cronTimeText"  placeholder="单位: 秒" class="input_value">
                                             <span slot="prepend">调用时间范围</span>
                                         </Input>
                                         <!-- <Input v-model="cron_time.cron_time_random_start"
                                                 placeholder="格式：10-60" class="input_value">
                                              <span slot="prepend" class="input_value">随机时间范围</span>
                                          </Input>-->
-                                        <Button type="primary" class="input_value">保存</Button>
+                                        <Button type="primary" class="input_value" v-on:click="saveRandomTime()">保存</Button>
 
                                         <div style="margin: 1% 5%">
-                                            说明：可以输入两种格式，单位 秒
+                                            说明：可以输入两种格式，单位 秒（最低调用频率为 60 秒,最高为6小时）
                                             <ul>
                                                 <li>纯数字</li>
                                                 <li>范围，例如: 30-60,代表在30秒-60秒之间随机调用一次</li>
@@ -57,7 +57,7 @@
                                 </Card>
                             </TabPane>
                             <!--日志显示-->
-                            <TabPane label="日志查询" name="name2">
+                            <TabPane label="日志查询" name="name2" v-on:click="outlookSave()" v-on:change="outlookSave()">
                                 <Table :columns="log" :data="log_data"></Table>
                             </TabPane>
                         </Tabs>
@@ -70,6 +70,7 @@
 </template>
 
 <script>
+import qs from 'QS'
 export default {
   name: 'Home',
   data () {
@@ -77,18 +78,17 @@ export default {
       theme: 'ligth',
       value: 'test',
       outlook: {
-        client_id: '',
-        client_secret: ''
-      },
-      cron_time: {
-        cron_time: 0,
-        cron_time_random_start: 0,
-        cron_time_random_end: 0
+        clientId: '',
+        clientSecret: '',
+        cronTime: 0,
+        cronTimeRandomStart: 0,
+        cronTimeRandomEnd: 0,
+        cronTimeText: ''
       },
       log: [
         {
           title: '调用时间',
-          key: 'time'
+          key: 'callTime'
         },
         {
           title: '调用结果',
@@ -104,24 +104,75 @@ export default {
         }
       ],
       log_data: [
-        {
-          time: '2020-03-23 17:00:03',
-          result: '成功',
-          msg: 'ok',
-          originalMsg: 'fddddddddddddddddfddddddddddd'
-        }, {
-          time: '2020-03-23 17:00:03',
-          result: '成功',
-          msg: 'ok',
-          originalMsg: 'fddddddddddddddddfddddddddddd'
-        }
       ]
     }
   },
   methods: {
     getOutlookInfo () {
       this.$axios.get('/outlook/outlook/getOutlookInfo')
+    },
+    outlookSave () {
+      let _this = this
+      _this.$axios({
+        method: 'post',
+        url: '/outlook/outlook/save',
+        data: qs.stringify({
+          client_id: _this.outlook.clientId,
+          client_secret: _this.outlook.clientSecret
+        })
+      }).then(res => {
+        if (res.data.code === 0) {
+          this.$Notice.success({
+            title: '保存成功'
+          })
+        }
+      }).catch(error => {
+        console.log(error)
+        this.$Notice.error({
+          title: '错误!'
+        })
+      })
+    },
+    saveRandomTime () {
+      let _this = this
+      _this.$axios({
+        method: 'post',
+        url: '/outlook/outlook/saveRandomTime',
+        data: qs.stringify({
+          cronTime: 3600,
+          crondomTime: _this.outlook.cronTimeText
+        })
+      }).then(res => {
+        if (res.data.code === 0) {
+          this.$Notice.success({
+            title: '调用时间范围 保存成功'
+          })
+        }
+      })
     }
+  },
+  mounted () {
+    let _this = this
+    _this.$axios({
+      method: 'get',
+      url: '/outlook/outlook/getOutlookInfo'
+    }).then(res => {
+      _this.outlook = res.data.data
+      _this.outlook.cronTimeText = _this.outlook.cronTimeRandomStart + '-' + _this.outlook.cronTimeRandomEnd
+    }).catch(error => {
+      console.log(error)
+    })
+    // 日志
+    _this.$axios({
+      method: 'get',
+      url: '/outlookLog/findLog'
+    }).then(res => {
+      let data_ = res.data
+      for (let i = 0; i < data_.length; i++) {
+        data_[i].callTime = _this.$moment(data_[i].callTime * 1000).format('YYYY-MM-DD HH:mm:ss')
+      }
+      _this.log_data = data_
+    })
   }
 }
 </script>

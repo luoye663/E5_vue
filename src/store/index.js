@@ -12,9 +12,13 @@ export default new Vuex.Store({
   },
   mutations: {
     changeLogin (state, user) {
-      state.token = user
+      state.user = user
       window.localStorage.setItem('username', user.username)
       window.localStorage.setItem('token', user.token)
+    },
+    clearLoginInfo () {
+      window.localStorage.setItem('username', '')
+      window.localStorage.setItem('token', '')
     }
   }
 })
