@@ -22,7 +22,7 @@
                                             <span slot="prepend">client_secret</span>
                                         </Input>
                                         <Button class="input_value" v-on:click="outlookSave()">保存</Button>
-                                        <Button type="primary" class="input_value" v-on:click="getOutlookInfo">授权</Button>
+                                        <Button type="primary" class="input_value" v-on:click="authorizeOutlook()">授权</Button>
                                     </div>
                                 </Card>
                                 <br/>
@@ -108,11 +108,37 @@ export default {
     }
   },
   methods: {
-    getOutlookInfo () {
-      this.$axios.get('/outlook/outlook/getOutlookInfo')
+    authorizeOutlook () {
+      let _this = this
+      if (_this.outlook.clientId.length < 1 || _this.outlook.clientSecret < 1) {
+        _this.$Notice.error({
+          _this: '请先进行保存!'
+        })
+        return
+      }
+      _this.$axios.get('/outlook/auth2/getAuthorizeUrl')
+        .then(function (res) {
+          if (res.data.code === 0) {
+            window.location.href = res.data.data
+          } else {
+            _this.$Notice.error({
+              title: '请先进行保存!'
+            })
+          }
+        }).catch(function (error) {
+          if (!error.response) {
+
+          }
+        })
     },
     outlookSave () {
       let _this = this
+      if (_this.outlook.clientId.length < 1 || _this.outlook.clientSecret < 1) {
+        this.$Notice.error({
+          title: '都没输入数据，保存啥呀?'
+        })
+        return
+      }
       _this.$axios({
         method: 'post',
         url: '/outlook/outlook/save',
@@ -145,33 +171,37 @@ export default {
       }).then(res => {
         if (res.data.code === 0) {
           this.$Notice.success({
-            title: '调用时间范围 保存成功'
+            title: '调用时间范围-保存成功'
           })
         }
+      }).catch(error => {
+        console.log(error)
       })
     }
   },
   mounted () {
+    // 获取用户信息
     let _this = this
-    _this.$axios({
-      method: 'get',
-      url: '/outlook/outlook/getOutlookInfo'
-    }).then(res => {
-      _this.outlook = res.data.data
-      _this.outlook.cronTimeText = _this.outlook.cronTimeRandomStart + '-' + _this.outlook.cronTimeRandomEnd
-    }).catch(error => {
-      console.log(error)
-    })
+    _this.$axios.get('/outlook/outlook/getOutlookInfo')
+      .then(function (res) {
+        _this.outlook = res.data.data
+        _this.outlook.cronTimeText = _this.outlook.cronTimeRandomStart + '-' + _this.outlook.cronTimeRandomEnd
+      }).catch(function (error) {
+        if (!error.response) {
+
+        }
+      })
     // 日志
-    _this.$axios({
-      method: 'get',
-      url: '/outlookLog/findLog'
-    }).then(res => {
+    _this.$axios.get('/outlookLog/findLog').then(function (res) {
       let data_ = res.data
       for (let i = 0; i < data_.length; i++) {
         data_[i].callTime = _this.$moment(data_[i].callTime * 1000).format('YYYY-MM-DD HH:mm:ss')
+        _this.log_data = data_
       }
-      _this.log_data = data_
+    }).catch(function (error) {
+      if (!error.response) {
+
+      }
     })
   }
 }

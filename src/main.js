@@ -10,7 +10,7 @@ import moment from 'moment'
 // 全局注册，使用方法为:this.$axios
 Vue.config.productionTip = false
 axios.defaults.baseURL = 'http://127.0.0.1:8083'
-let _this = this
+// let _this = this
 
 Vue.use(ViewUI)
 axios.interceptors.request.use(
@@ -36,9 +36,9 @@ axios.interceptors.response.use(
       // eslint-disable-next-line eqeqeq
       if (error.response.status == 403) {
         store.commit('clearLoginInfo')
-        _this.$Notice.success({
-          title: '身份已过期，请重新登录!'
-        })
+        // _this.$Notice.success({
+        //   title: '身份已过期，请重新登录!'
+        // })
         router.push('/user/login')
       }
     }
