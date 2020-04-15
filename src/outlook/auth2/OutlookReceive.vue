@@ -37,6 +37,9 @@ export default {
 
       if (_this.$utils.getUrlKey('code') === null || _this.$utils.getUrlKey('state') === null || _this.$utils.getUrlKey('session_state') === null) {
         _this.msg = '缺少参数!'
+        // 关闭加载框
+        _this.spinShow = false
+        _this.modal1 = true
         return
       }
       _this.$axios.get('/outlook/auth2/receive', {
@@ -64,7 +67,7 @@ export default {
   },
   methods: {
     ok () {
-      this.$Message.info('Clicked ok')
+      this.$router.push('/user/home')
     },
     cancel () {
       this.$Message.info('Clicked cancel')

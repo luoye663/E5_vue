@@ -9,10 +9,31 @@
 <script>
 export default {
   name: 'Login',
+  data () {
+    return {
+      href: ''
+    }
+  },
   methods: {
     githubLogin () {
-      window.location.href = ''
+      window.location.href = this.href
     }
+  },
+  mounted () {
+    let _this = this
+    _this.$axios.get('/auth2/getGithubUrl', {
+    })
+      .then(function (res) {
+        if (res.data.code !== 0) {
+          _this.msg = res.data.msg
+          return
+        }
+        _this.href = res.data.data
+      }).catch(function (error) {
+        if (!error.response) {
+
+        }
+      })
   }
 }
 </script>
