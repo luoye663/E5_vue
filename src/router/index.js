@@ -12,6 +12,9 @@ const router = new Router({
   mode: 'history',
   routes: [
     {
+      path: '/',
+      redirect: '/user/login'
+    }, {
       path: '/user/home',
       name: 'Home',
       component: Home,

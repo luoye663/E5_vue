@@ -151,12 +151,16 @@ export default {
           this.$Notice.success({
             title: '保存成功'
           })
+        } else {
+          this.$Notice.error({
+            title: res.data.msg
+          })
         }
       }).catch(error => {
+        if (!error.response) {
+
+        }
         console.log(error)
-        this.$Notice.error({
-          title: '错误!'
-        })
       })
     },
     saveRandomTime () {
@@ -172,6 +176,10 @@ export default {
         if (res.data.code === 0) {
           this.$Notice.success({
             title: '调用时间范围-保存成功'
+          })
+        } else {
+          this.$Notice.error({
+            title: res.data.msg
           })
         }
       }).catch(error => {

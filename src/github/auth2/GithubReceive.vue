@@ -10,7 +10,6 @@
           v-model="modal1"
           title="授权结果"
           @on-ok="ok"
-          @on-cancel="cancel"
           cancel-text=""
           :mask-closable="false">
           <p>{{msg}}</p>
