@@ -1,82 +1,94 @@
 <template>
-    <div>
-        <div style="margin: 0 auto;height: 10%;width: 95%;">
-            <h2>E5续订</h2>
-        </div>
-        <div style="margin: 0 auto;width: 95%;">
-            <Row>
-                <Col span="4">col-4</Col>
-                <Col span="16">
-                    <div>
-                        <Tabs>
-                            <TabPane label="基础配置" name="name1">
-                                <!--保存key-->
-                                <Card style="width:350px">
-                                    <p slot="title">Key配置</p>
-                                    <div>
-                                        <Input v-model="outlook.clientId" placeholder="client_id" class="input_value">
-                                            <span slot="prepend">client_id</span>
-                                        </Input>
-                                        <Input v-model="outlook.clientSecret" placeholder="client_secret"
-                                               class="input_value">
-                                            <span slot="prepend">client_secret</span>
-                                        </Input>
-                                        <Button class="input_value" v-on:click="outlookSave()">保存</Button>
-                                        <Button type="primary" class="input_value" v-on:click="authorizeOutlook()">授权</Button>
-                                    </div>
-                                </Card>
-                                <br/>
-                                <!--调用时间-->
-                                <Card style="width:350px">
-                                    <p slot="title">调用时间范围配置</p>
-                                    <div>
-                                        <Input v-model="outlook.cronTimeText"  placeholder="单位: 秒" class="input_value">
-                                            <span slot="prepend">调用时间范围</span>
-                                        </Input>
-                                        <!-- <Input v-model="cron_time.cron_time_random_start"
-                                                placeholder="格式：10-60" class="input_value">
-                                             <span slot="prepend" class="input_value">随机时间范围</span>
-                                         </Input>-->
-                                        <Button type="primary" class="input_value" v-on:click="saveRandomTime()">保存</Button>
-
-                                        <div style="margin: 1% 5%">
-                                            说明：可以输入两种格式，单位 秒（最低调用频率为 60 秒,最高为6小时）
-                                            <ul>
-                                                <li>纯数字</li>
-                                                <li>范围，例如: 30-60,代表在30秒-60秒之间随机调用一次</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </Card>
-                                <br/>
-                                <!--操作-->
-                                <Card style="width:350px">
-                                    <p slot="title">操作</p>
-                                    <!--                  <Switch true-color="#13ce66" false-color="#ff4949"/>-->
-                                    <Button type="error" class="input_value">删除本网站账号及所有信息</Button>
-                                </Card>
-                            </TabPane>
-                            <!--日志显示-->
-                            <TabPane label="日志查询" name="name2" v-on:click="outlookSave()" v-on:change="outlookSave()">
-                                <Table :columns="log" :data="log_data"></Table>
-                            </TabPane>
-                        </Tabs>
-                    </div>
-                </Col>
-                <Col span="4">col-4</Col>
-            </Row>
-        </div>
+  <div>
+    <div style="margin: 0 auto;height: 10%;width: 95%;">
+      <h2>E5续订</h2>
     </div>
+    <div style="margin: 0 auto;width: 95%;">
+      <Row>
+        <Col span="4">col-4</Col>
+        <Col span="16">
+          <div>
+            <Tabs>
+              <TabPane label="基础配置" name="name1">
+                <!--保存key-->
+                <Card style="width:350px">
+                  <p slot="title">Key配置</p>
+                  <div>
+                    <Input v-model="outlook.clientId" placeholder="client_id" class="input_value">
+                      <span slot="prepend">client_id</span>
+                    </Input>
+                    <Input v-model="outlook.clientSecret" placeholder="client_secret"
+                           class="input_value">
+                      <span slot="prepend">client_secret</span>
+                    </Input>
+                    <Button class="input_value" :loading="outlookSaveLoading" v-on:click="outlookSave()">
+                      <span v-if="!outlookSaveLoading">保存</span>
+                      <span v-else>Loading...</span>
+                    </Button>
+                    <Button type="primary" :loading="authorizeOutlookLoading" class="input_value" v-on:click="authorizeOutlook()">
+                      <span v-if="!authorizeOutlookLoading">授权</span>
+                      <span v-else>Loading...</span>
+                    </Button>
+                  </div>
+                </Card>
+                <br/>
+                <!--调用时间-->
+                <Card style="width:350px">
+                  <p slot="title">调用时间范围配置</p>
+                  <div>
+                    <Input v-model="outlook.cronTimeText" placeholder="单位: 秒" class="input_value">
+                      <span slot="prepend">调用时间范围</span>
+                    </Input>
+                    <!-- <Input v-model="cron_time.cron_time_random_start"
+                            placeholder="格式：10-60" class="input_value">
+                         <span slot="prepend" class="input_value">随机时间范围</span>
+                     </Input>-->
+                    <Button type="primary" :loading="saveRandomTimeLoading"  class="input_value" v-on:click="saveRandomTime()">
+                      <span v-if="!saveRandomTimeLoading">保存</span>
+                      <span v-else>Loading...</span>
+                    </Button>
+
+                    <div style="margin: 1% 5%">
+                      说明：单位 秒（最低调用频率为 60 秒,最高为6小时）
+                      <ul>
+                        <li>范围，例如: 30-60,代表在30秒-60秒之间随机调用一次</li>
+                      </ul>
+                    </div>
+                  </div>
+                </Card>
+                <br/>
+                <!--操作-->
+                <Card style="width:350px">
+                  <p slot="title">操作</p>
+                  <!--                  <Switch true-color="#13ce66" false-color="#ff4949"/>-->
+                  <Button type="error" class="input_value">删除本网站账号及所有信息</Button>
+                </Card>
+              </TabPane>
+              <!--日志显示-->
+              <TabPane label="日志查询" name="name2" v-on:click="outlookSave()" v-on:change="outlookSave()">
+                <Table :columns="log" :data="log_data"></Table>
+              </TabPane>
+            </Tabs>
+          </div>
+        </Col>
+        <Col span="4">col-4</Col>
+      </Row>
+    </div>
+  </div>
 </template>
 
 <script>
 import qs from 'QS'
+
 export default {
   name: 'Home',
   data () {
     return {
       theme: 'ligth',
       value: 'test',
+      outlookSaveLoading: false,
+      authorizeOutlookLoading: false,
+      saveRandomTimeLoading: false,
       outlook: {
         clientId: '',
         clientSecret: '',
@@ -103,8 +115,7 @@ export default {
           key: 'originalMsg'
         }
       ],
-      log_data: [
-      ]
+      log_data: []
     }
   },
   methods: {
@@ -116,8 +127,10 @@ export default {
         })
         return
       }
+      _this.authorizeOutlookLoading = true
       _this.$axios.get('/outlook/auth2/getAuthorizeUrl')
         .then(function (res) {
+          _this.authorizeOutlookLoading = false
           if (res.data.code === 0) {
             window.location.href = res.data.data
           } else {
@@ -139,6 +152,7 @@ export default {
         })
         return
       }
+      _this.outlookSaveLoading = true
       _this.$axios({
         method: 'post',
         url: '/outlook/outlook/save',
@@ -156,6 +170,7 @@ export default {
             title: res.data.msg
           })
         }
+        _this.outlookSaveLoading = false
       }).catch(error => {
         if (!error.response) {
 
@@ -165,6 +180,7 @@ export default {
     },
     saveRandomTime () {
       let _this = this
+      _this.saveRandomTimeLoading = true
       _this.$axios({
         method: 'post',
         url: '/outlook/outlook/saveRandomTime',
@@ -182,6 +198,7 @@ export default {
             title: res.data.msg
           })
         }
+        _this.saveRandomTimeLoading = false
       }).catch(error => {
         console.log(error)
       })
@@ -199,7 +216,7 @@ export default {
 
         }
       })
-    // 日志
+      // 日志
     _this.$axios.get('/outlookLog/findLog').then(function (res) {
       let data_ = res.data
       for (let i = 0; i < data_.length; i++) {
@@ -216,13 +233,13 @@ export default {
 </script>
 
 <style scoped>
-    .wrapper-header-nav-list {
-        height: inherit;
-        float: right;
-    }
+  .wrapper-header-nav-list {
+    height: inherit;
+    float: right;
+  }
 
-    .input_value {
-        width: 300px;
-        margin: 5px;
-    }
+  .input_value {
+    width: 300px;
+    margin: 5px;
+  }
 </style>
