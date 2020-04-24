@@ -1,22 +1,22 @@
 <template>
+  <div>
+    <Spin fix v-if="spinShow">
+      <Icon type="ios-loading" size=32 class="demo-spin-icon-load"></Icon>
+      <div>正在获取授权状态......</div>
+    </Spin>
     <div>
-        <Spin fix v-if="spinShow">
-            <Icon type="ios-loading" size=32 class="demo-spin-icon-load"></Icon>
-            <div>正在获取授权状态......</div>
-        </Spin>
-        <div>
-            <!--对话框-->
-            <Modal
-                    v-model="modal1"
-                    title="授权结果"
-                    @on-ok="ok"
-                    @on-cancel="cancel"
-                    cancel-text=""
-                    :mask-closable="false">
-                <p>{{msg}}</p>
-            </Modal>
-        </div>
+      <!--对话框-->
+      <Modal
+        v-model="modal1"
+        title="授权结果"
+        @on-ok="ok"
+        @on-cancel="cancel"
+        cancel-text=""
+        :mask-closable="false">
+        <p>{{msg}}</p>
+      </Modal>
     </div>
+  </div>
 </template>
 
 <script>
@@ -35,8 +35,15 @@ export default {
     setTimeout(() => {
       // adsa
 
-      if (_this.$utils.getUrlKey('code') === null || _this.$utils.getUrlKey('state') === null || _this.$utils.getUrlKey('session_state') === null) {
+      if (_this.$utils.getUrlKey('state') === null) {
         _this.msg = '缺少参数!'
+        // 关闭加载框
+        _this.spinShow = false
+        _this.modal1 = true
+        return
+      }
+      if (_this.$utils.getUrlKey('error') != null) {
+        _this.msg = '授权失败: ' + _this.$utils.getUrlKey('error_description')
         // 关闭加载框
         _this.spinShow = false
         _this.modal1 = true
@@ -50,7 +57,7 @@ export default {
         }
       })
         .then(function (res) {
-        // 关闭加载框
+          // 关闭加载框
           _this.spinShow = false
           _this.modal1 = true
           if (res.data.code !== 0) {
@@ -77,7 +84,7 @@ export default {
 </script>
 
 <style scoped>
-    .demo-spin-icon-load {
-        animation: ani-demo-spin 1s linear infinite;
-    }
+  .demo-spin-icon-load {
+    animation: ani-demo-spin 1s linear infinite;
+  }
 </style>
