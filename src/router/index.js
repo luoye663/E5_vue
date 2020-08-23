@@ -5,6 +5,7 @@ import store from '../store'
 import Receive from '../github/auth2/GithubReceive'
 import Login from '../github/Login'
 import OutlookReceive from '../outlook/auth2/OutlookReceive'
+import utils from '../util/utils'
 
 Vue.use(Router)
 
@@ -42,7 +43,9 @@ const router = new Router({
 
 router.beforeEach((to, from, next) => {
   if (to.meta.requireAuth) {
-    if (store.state.user.token) {
+    var nowTime = utils.getTime()
+    var expire = store.state.user.expire
+    if (store.state.user.token !== '' && expire > nowTime) {
       next()
     } else {
       next({

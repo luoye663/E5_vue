@@ -1,24 +1,26 @@
 <template>
     <div>
-        <Spin  fix v-if="spinShow">
+        <Spin fix v-if="spinShow">
             <Icon type="ios-loading" size=32 class="demo-spin-icon-load"></Icon>
             <div>正在登录</div>
         </Spin>
-      <div>
-        <!--对话框-->
-        <Modal
-          v-model="modal1"
-          title="授权结果"
-          @on-ok="ok"
-          cancel-text=""
-          :mask-closable="false">
-          <p>{{msg}}</p>
-        </Modal>
-      </div>
+        <div>
+            <!--对话框-->
+            <Modal
+                    v-model="modal1"
+                    title="授权结果"
+                    @on-ok="ok"
+                    cancel-text=""
+                    :mask-closable="false">
+                <p>{{msg}}</p>
+            </Modal>
+        </div>
     </div>
 </template>
 
 <script>
+
+import utils from '../../util/utils'
 
 export default {
   name: 'Receive',
@@ -55,9 +57,13 @@ export default {
           return
         }
         let userToken = res.data.data.token
+        let time = utils.getTime()
         // 将用户token保存到vuex中
-        _this.$store.commit('changeLogin', { token: userToken,
-          username: res.data.data.username})
+        _this.$store.commit('changeLogin', {
+          token: userToken,
+          username: res.data.data.username,
+          expire: time + res.data.data.expire
+        })
         _this.$router.push('/user/home')
         console.log('登陆成功')
       }).catch(error => {

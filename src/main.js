@@ -27,7 +27,7 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   response => {
     if (response.status === 200) {
-    //  dsa
+      //  dsa
     }
     return response
   },
@@ -42,6 +42,18 @@ axios.interceptors.response.use(
         router.push('/user/login')
       }
     }
+  }
+)
+axios.interceptors.response.use(
+  response => {
+    // 当返回信息为未登录或者登录失效的时候重定向为登录页面
+    if (response.data.status !== 200 && response.data.status !== undefined) {
+      alert('系统异常:http响应代码:' + response.data.status)
+    }
+    return response
+  },
+  error => {
+    return Promise.reject(error)
   }
 )
 // 设置相关属性

@@ -3,6 +3,10 @@
         <div>
             <Icon v-on:click="githubLogin" type="logo-github" size="80" style="margin: 10% auto;width:100%"/>
         </div>
+        <Spin fix v-if="spinShow">
+            <Icon type="ios-loading" size=32 class="demo-spin-icon-load"></Icon>
+            <div>正在获取登录地址,请稍后......</div>
+        </Spin>
     </div>
 </template>
 
@@ -11,7 +15,8 @@ export default {
   name: 'Login',
   data () {
     return {
-      href: ''
+      href: '',
+      spinShow: false
     }
   },
   methods: {
@@ -21,6 +26,7 @@ export default {
   },
   mounted () {
     let _this = this
+    _this.spinShow = true
     _this.$axios.get('/auth2/getGithubUrl', {
     })
       .then(function (res) {
@@ -29,6 +35,7 @@ export default {
           return
         }
         _this.href = res.data.data
+        _this.spinShow = false
       }).catch(function (error) {
         if (!error.response) {
 

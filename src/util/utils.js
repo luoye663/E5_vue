@@ -6,5 +6,8 @@ export default {
     }
     let uk = da[1].replace(/\+/g, '%20')
     return uk
+  },
+  getTime () {
+    return Math.round(new Date().getTime() / 1000)
   }
 }
